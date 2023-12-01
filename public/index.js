@@ -10,9 +10,15 @@ function showAnswers(day, part1, part2) {
 }
 
 function parseData(day, callback) {
-  fetch(`../input/${day}.txt`)
+  return fetch(`../input/${day}.txt`)
     .then(res => res.text())
-    .then(text => callback(text.split('\n')));
+    .then(text => {
+      const parsedText = text.split('\n');
+      if (parsedText[parsedText.length - 1] === '') {
+        parsedText.pop();
+      }
+      return callback(parsedText);
+    });
 }
 
 function filterDuplicates(arr) {
