@@ -1,58 +1,94 @@
 const DAY3 = 3;
 parseData(DAY3, (input) => {
   const grid = input.map(line => line.split(''));
-  const part1 = getPartNumbers(grid).reduce((acc, curr) => acc += curr, 0);;
-  const part2 = '';
-
+  const part1 = getPartNumbers(grid).validPartNumbers.reduce((acc, curr) => acc += curr, 0);
+  const part2 = sumGearRatios(getPartNumbers(grid).validPartsNearGears);
   showAnswers(DAY3, part1, part2);
 });
 
 const getPartNumbers = grid => {
   const validPartNumbers = [];
   const invalidNumbers = [];
+  const validPartsNearGears = [];
 
   for (let i = 0; i<grid.length; i++) {
     const line = grid[i];
     let currentNumber = '';
     let isValid = false;
+    let nearGear = [];
 
     for (let j=0; j<line.length; j++) {
       const char = line[j];
 
       if (char.match(/\d/)) {
         currentNumber += char;
-        if (!isValid) {
-          // check if character is defined and not a digit or '.'
-          if (getSurroundingChars(grid, i, j).some(c => c && /[^\d\.]/.test(c))) {
-            isValid = true;
-          }
+        // check if character is defined and not a digit or '.'
+        const surroundingChars = getSurroundingChars(grid, i, j);
+        if (surroundingChars.some(c => c && c[0] && /[^\d\.]/.test(c[0]))) {
+          isValid = true;
         }
+
+        nearGear = [...new Set([
+          ...nearGear,
+          ...surroundingChars.map(
+            c => c && c[0] && /\*/.test(c[0]) && `${c[1]}, ${c[2]}`
+          ).filter(Boolean)
+        ])];
       }
+
       // if end of number ('.' or end of line)
       if (!char.match(/\d/) || j === line.length - 1) {
         if (currentNumber && isValid) {
           validPartNumbers.push(parseInt(currentNumber));
+          if (nearGear && nearGear.length) {
+            nearGear.forEach(gear => {
+              let key = gear;
+              if (validPartsNearGears[key]) {
+                validPartsNearGears[key].push(currentNumber)
+              } else {
+                validPartsNearGears[key] = [currentNumber];
+              }
+            });
+          }
         } else if (currentNumber) {
           invalidNumbers.push(parseInt(currentNumber));
         }
         currentNumber = '';
         isValid = false;
+        nearGear = [];
       }
     }
   }
 
-  return validPartNumbers;
+  return {
+    validPartNumbers,
+    validPartsNearGears
+  };
 };
 
 const getSurroundingChars = (grid, i, j) => {
   return [
-    grid[i-1]?.[j-1], // upper left
-    grid[i-1]?.[j], // upper
-    grid[i-1]?.[j+1], // upper right
-    grid[i]?.[j+1], // right
-    grid[i+1]?.[j+1], // lower right
-    grid[i+1]?.[j], // lower
-    grid[i+1]?.[j-1], // lower left
-    grid[i]?.[j-1] // left
+    getCharInfo(grid, i-1, j-1), // upper left
+    getCharInfo(grid, i-1, j), // upper
+    getCharInfo(grid, i-1, j+1), // upper right
+    getCharInfo(grid, i, j+1), // right
+    getCharInfo(grid, i+1, j+1), // lower right
+    getCharInfo(grid, i+1, j), // lower
+    getCharInfo(grid, i+1, j-1), // lower left
+    getCharInfo(grid, i, j-1) // left
   ];
+}
+
+const getCharInfo = (grid, i, j) => {
+  return [grid[i]?.[j], i, j];
+}
+
+const sumGearRatios = gears => {
+  return Object.keys(gears).reduce((acc, curr) => {
+    const gear = gears[curr];
+    if (gear.length === 2) {
+      acc += (gear[0] * gear[1]);
+    }
+    return acc;
+  }, 0);
 }
