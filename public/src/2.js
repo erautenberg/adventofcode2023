@@ -1,5 +1,5 @@
-const DAY1 = 2;
-parseData(DAY1, (input) => {
+const DAY2 = 2;
+parseData(DAY2, (input) => {
   const parsedInput = formatGames(input);
 
   const validGames = Object.keys(parsedInput).map(id => isPossible(parsedInput[id], bagValues) && id).filter(Boolean);
@@ -8,7 +8,7 @@ parseData(DAY1, (input) => {
   const fewestCubes = Object.keys(parsedInput).map(id => fewestPossible(parsedInput[id]))
   const part2 = getSumOfPowers(fewestCubes);
 
-  showAnswers(DAY1, part1, part2);
+  showAnswers(DAY2, part1, part2);
 });
 
 const colors = ['red', 'blue', 'green'];
