@@ -48,18 +48,13 @@ const getDistance = (totalTime, buttonTime) => {
   return distance;
 };
 
-const getTimes = (time, distance) => {
-  // Math.ceil(time / 2)
-  return [...Array(time).keys()].reduce((acc, curr) => {
-    if (getDistance(time, curr) > distance) {
-      acc.push(curr);
-    }
-    return acc;
-  }, []);
-};
-
 const getWaysToWin = (time, distance) => {
-  return getTimes(time, distance).length;
+  for (let i=0; i<time; i++) {
+    if (getDistance(time, i) > distance) {
+      return time - i * 2 + 1;
+    }
+  }
+  return 0;
 };
 
 const getWaysToWinArray = races => {
@@ -69,3 +64,26 @@ const getWaysToWinArray = races => {
 const getProductOfWaysToWin = races => {
   return getWaysToWinArray(races).reduce((acc, curr) => acc *= curr, 1);
 }
+
+const getTimesOptimized = (time, distance) => {
+  let start;
+  for (let i=0; i<time; i++) {
+    if (getDistance(time, i) > distance) {
+      start = i;
+      break;
+    }
+  }
+  if (start !== undefined) {
+    let end = time - start;
+  }
+
+  return start !== undefined ? time - start + 1 : 0;
+
+  // // Math.ceil(time / 2)
+  // return [...Array(time).keys()].reduce((acc, curr) => {
+  //   if (getDistance(time, curr) > distance) {
+  //     acc.push(curr);
+  //   }
+  //   return acc;
+  // }, []);
+};
