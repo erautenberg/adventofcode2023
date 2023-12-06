@@ -1,8 +1,20 @@
 const DAY4 = 4;
 parseData(DAY4, (input) => {
+  const timeStringData = `Day ${DAY4}, Data Setup Execution Time`;
+  console.time(timeStringData);
   const formattedCards = formatCards(input);
+  console.timeEnd(timeStringData);
+
+  const timeString1 = `Day ${DAY4}, Part 1 Execution Time`;
+  console.time(timeString1);
   const part1 = getTotalScore(formattedCards);
+  console.timeEnd(timeString1);
+
+  const timeString2 = `Day ${DAY4}, Part 2 Execution Time`;
+  console.time(timeString2);
   const part2 = getTotalCards(formattedCards);
+  console.timeEnd(timeString2);
+
   showAnswers(DAY4, part1, part2);
 });
 

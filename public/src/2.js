@@ -1,12 +1,21 @@
 const DAY2 = 2;
 parseData(DAY2, (input) => {
+  const timeStringData = `Day ${DAY2}, Data Setup Execution Time`;
+  console.time(timeStringData);
   const parsedInput = formatGames(input);
+  console.timeEnd(timeStringData);
 
+  const timeString1 = `Day ${DAY2}, Part 1 Execution Time`;
+  console.time(timeString1);
   const validGames = Object.keys(parsedInput).map(id => isPossible(parsedInput[id], bagValues) && id).filter(Boolean);
   const part1 = getValidGameIdSum(validGames);
+  console.timeEnd(timeString1);
 
+  const timeString2 = `Day ${DAY2}, Part 2 Execution Time`;
+  console.time(timeString2);
   const fewestCubes = Object.keys(parsedInput).map(id => fewestPossible(parsedInput[id]))
   const part2 = getSumOfPowers(fewestCubes);
+  console.timeEnd(timeString2);
 
   showAnswers(DAY2, part1, part2);
 });

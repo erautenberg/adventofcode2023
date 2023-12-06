@@ -1,8 +1,20 @@
 const DAY3 = 3;
 parseData(DAY3, (input) => {
+  const timeStringData = `Day ${DAY3}, Data Setup Execution Time`;
+  console.time(timeStringData);
   const grid = input.map(line => line.split(''));
+  console.timeEnd(timeStringData);
+
+  const timeString1 = `Day ${DAY3}, Part 1 Execution Time`;
+  console.time(timeString1);
   const part1 = getPartNumbers(grid).validPartNumbers.reduce((acc, curr) => acc += curr, 0);
+  console.timeEnd(timeString1);
+
+  const timeString2 = `Day ${DAY3}, Part 2 Execution Time`;
+  console.time(timeString2);
   const part2 = sumGearRatios(getPartNumbers(grid).validPartsNearGears);
+  console.timeEnd(timeString2);
+
   showAnswers(DAY3, part1, part2);
 });
 

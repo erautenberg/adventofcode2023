@@ -1,8 +1,20 @@
 const DAY5 = 5;
 parseData(DAY5, (input) => {
+  const timeStringData = `Day ${DAY5}, Data Setup Execution Time`;
+  console.time(timeStringData);
   const almanac = mapAlmanac(input);
+  console.timeEnd(timeStringData);
+
+  const timeString1 = `Day ${DAY5}, Part 1 Execution Time`;
+  console.time(timeString1);
   const part1 = getLowestLocation(almanac);
+  console.timeEnd(timeString1);
+
+  const timeString2 = `Day ${DAY5}, Part 2 Execution Time`;
+  console.time(timeString2);
   const part2 = getLowestLocationByRange(almanac);
+  console.timeEnd(timeString2);
+
   showAnswers(DAY5, part1, part2);
 });
 
