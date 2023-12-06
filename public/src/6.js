@@ -10,6 +10,11 @@ parseData(DAY6, (input) => {
   const part1 = getProductOfWaysToWin(races1);
   console.timeEnd(timeString1);
 
+  const timeString1Quadratic = `Day ${DAY6}, Part 1 Execution Time - Quadratic`;
+  console.time(timeString1Quadratic);
+  const part1quadratic = getProductOfWaysToWin(races1);
+  console.timeEnd(timeString1Quadratic);
+
   const timeStringData2 = `Day ${DAY6}, Part 2 Data Setup Execution Time`;
   console.time(timeStringData2);
   const races2 = getRaceData(input, true);
@@ -19,6 +24,11 @@ parseData(DAY6, (input) => {
   console.time(timeString2);
   const part2 = getProductOfWaysToWin(races2);
   console.timeEnd(timeString2);
+
+  const timeString2Quadratic = `Day ${DAY6}, Part 2 Execution Time - Quadratic`;
+  console.time(timeString2Quadratic);
+  const part2quadratic = getProductOfWaysToWinQuadratic(races2);
+  console.timeEnd(timeString2Quadratic);
 
   showAnswers(DAY6, part1, part2);
 });
@@ -57,6 +67,20 @@ const getWaysToWin = (time, distance) => {
   return 0;
 };
 
+const getWaysToWinQuadratic = (time, distance) => {
+  let a = 1;
+  let b = time;
+  let c = distance + 1; // need to have larger distance to win, not tie
+
+  let sqrt = Math.sqrt((b ** 2) - 4 * a * c);
+  let bottom = 2 * a;
+
+  let start = Math.ceil((b - sqrt) / bottom);
+  let end = Math.floor((b + sqrt) / bottom);
+
+  return end - start + 1;
+}
+
 const getWaysToWinArray = races => {
   return races.times.map((time, index) => getWaysToWin(time, races.distances[index]));
 };
@@ -65,25 +89,10 @@ const getProductOfWaysToWin = races => {
   return getWaysToWinArray(races).reduce((acc, curr) => acc *= curr, 1);
 }
 
-const getTimesOptimized = (time, distance) => {
-  let start;
-  for (let i=0; i<time; i++) {
-    if (getDistance(time, i) > distance) {
-      start = i;
-      break;
-    }
-  }
-  if (start !== undefined) {
-    let end = time - start;
-  }
-
-  return start !== undefined ? time - start + 1 : 0;
-
-  // // Math.ceil(time / 2)
-  // return [...Array(time).keys()].reduce((acc, curr) => {
-  //   if (getDistance(time, curr) > distance) {
-  //     acc.push(curr);
-  //   }
-  //   return acc;
-  // }, []);
+const getWaysToWinArrayQuadratic = races => {
+  return races.times.map((time, index) => getWaysToWinQuadratic(time, races.distances[index]));
 };
+
+const getProductOfWaysToWinQuadratic = races => {
+  return getWaysToWinArray(races).reduce((acc, curr) => acc *= curr, 1);
+}
