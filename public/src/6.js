@@ -1,32 +1,41 @@
 const DAY6 = 6;
 parseData(DAY6, (input) => {
-  const timeStringData = `Day ${DAY6}, Data Setup Execution Time`;
-  console.time(timeStringData);
-  const races = getRaceData(input);
-  console.timeEnd(timeStringData);
+  const timeStringData1 = `Day ${DAY6}, Part 1 Data Setup Execution Time`;
+  console.time(timeStringData1);
+  const races1 = getRaceData(input);
+  console.timeEnd(timeStringData1);
 
   const timeString1 = `Day ${DAY6}, Part 1 Execution Time`;
   console.time(timeString1);
-  const part1 = getProductOfWaysToWin(races);
+  const part1 = getProductOfWaysToWin(races1);
   console.timeEnd(timeString1);
+
+  const timeStringData2 = `Day ${DAY6}, Part 2 Data Setup Execution Time`;
+  console.time(timeStringData2);
+  const races2 = getRaceData(input, true);
+  console.timeEnd(timeStringData2);
 
   const timeString2 = `Day ${DAY6}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = '';
+  const part2 = getProductOfWaysToWin(races2);
   console.timeEnd(timeString2);
 
   showAnswers(DAY6, part1, part2);
 });
 
-const getRaceData = input => {
+const getRaceData = (input, combine) => {
   return {
-    times: parseValues(input[0]),
-    distances: parseValues(input[1]),
+    times: parseValues(input[0], combine),
+    distances: parseValues(input[1], combine),
   }
 };
 
-const parseValues = input => {
-  return input.split(/\s+|:\s*/gi).map(n => parseInt(n)).filter(Boolean);
+const parseValues = (input, combine) => {
+  let numsAsStrings = input.split(/\s+|:\s*/gi).slice(1);
+  if (combine) {
+    numsAsStrings = [numsAsStrings.join('')];
+  }
+  return numsAsStrings.map(n => parseInt(n)).filter(Boolean);
 };
 
 const getDistance = (totalTime, buttonTime) => {
@@ -40,6 +49,7 @@ const getDistance = (totalTime, buttonTime) => {
 };
 
 const getTimes = (time, distance) => {
+  // Math.ceil(time / 2)
   return [...Array(time).keys()].reduce((acc, curr) => {
     if (getDistance(time, curr) > distance) {
       acc.push(curr);
