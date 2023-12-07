@@ -3,24 +3,19 @@ parseData(DAY7, (input) => {
   const timeStringData1 = `Day ${DAY7}, Part 1 Data Setup Execution Time`;
   console.time(timeStringData1);
   const hands = getHands(input);
-  const sortedHands = compareHandsLowToHigh(hands);
   console.timeEnd(timeStringData1);
-
-  // console.log(sortedHands);
 
   const timeString1 = `Day ${DAY7}, Part 1 Execution Time`;
   console.time(timeString1);
+  const sortedHands = compareHandsLowToHigh(hands);
   const part1 = getScore(sortedHands);
   console.timeEnd(timeString1);
 
-  const timeStringData2 = `Day ${DAY7}, Part 2 Data Setup Execution Time`;
-  console.time(timeStringData2);
-  const races2 = '';
-  console.timeEnd(timeStringData2);
-
   const timeString2 = `Day ${DAY7}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = '';
+  const sortedHandsWithJAsJokers = compareHandsLowToHighWithJAsJokers(hands);
+  console.log(sortedHandsWithJAsJokers)
+  const part2 = getScore(sortedHandsWithJAsJokers);
   console.timeEnd(timeString2);
 
   showAnswers(DAY7, part1, part2);
@@ -35,6 +30,11 @@ const cardNums = {
   ...Array.from({length: 8}, (_, i) => i + 2).reduce((acc, curr) => (acc[curr] = parseInt(curr),acc), {})
 };
 
+const cardNumsWithJAsJokers = {
+  ...cardNums,
+  J: 1
+}
+
 const priority = new Map([
   ['5K', 0],
   ['4K', 1],
@@ -48,17 +48,35 @@ const priority = new Map([
 const getHands = input => {
   return input.map(line => {
     const halves = line.split(' ');
+
     const bid = parseInt(halves[1]);
     const cardAsNums = convertCardsToNums(halves[0].split(''));
     const sortedCardsAsNums = cardAsNums.toSorted((a, b) => (a > b ? -1 : 1));
     const repeats = getNumberOfRepeats(cardAsNums);
     const handType = getHandType(repeats);
-    return { cardAsNums, sortedCardsAsNums, repeats, handType, bid };
+
+    const cardAsNumsWithJAsJokers = convertCardsToNums(halves[0].split(''), true);
+    const repeatsWithJAsJokers = getNumberOfRepeats(cardAsNums, true);
+    const jokerCount = cardAsNums.filter(c => c === 11).length;
+    const handTypeWithJAsJokers = getHandTypeWithJAsJokers(repeatsWithJAsJokers, jokerCount);
+
+    return {
+      cards: halves[0],
+      cardAsNums,
+      sortedCardsAsNums,
+      repeats,
+      handType,
+      cardAsNumsWithJAsJokers,
+      repeatsWithJAsJokers,
+      jokerCount,
+      handTypeWithJAsJokers,
+      bid
+    };
   });
 };
 
-const convertCardsToNums = cards => {
-  return cards.map(card => cardNums[card]);
+const convertCardsToNums = (cards, jokers = false) => {
+  return cards.map(card => jokers ? cardNumsWithJAsJokers[card] : cardNums[card]);
 };
 
 const getHandType = repeats => {
@@ -79,9 +97,51 @@ const getHandType = repeats => {
   return handType;
 };
 
-const getNumberOfRepeats = card => {
+const getHandTypeWithJAsJokers = (repeats, jokers) => {
+  if (!jokers) {
+    return getHandType(repeats);
+  }
+
+  let handType = 'HC';
+
+  if (jokers >= 4) {
+    handType = '5K';
+  } else if (jokers === 3) {
+    if (repeats[0][0] === 2) {
+      handType = '5K';
+    } else {
+      handType = '4K';
+    }
+  } else if (jokers === 2) {
+    if (repeats[0][0] === 3) {
+      handType = '5K';
+    } else if (repeats[0][0] === 2) {
+      handType = '4K'
+    } else {
+      handType = '3K';
+    }
+  } else if (jokers === 1) {
+    if (repeats[0][0] === 4) {
+      handType = '5K';
+    } else if (repeats[0][0] === 3) {
+      handType = '4K'
+    } else if (repeats[0][0] === 2 && repeats[1][0] === 2) {
+      handType = 'FH';
+    } else if (repeats[0][0] === 2) {
+      handType = '3K';
+    } else {
+      handType = '1P';
+    }
+  }
+
+  return handType;
+}
+
+const getNumberOfRepeats = (card, jokers = false) => {
   const repeatsObj = card.reduce((acc, curr) => {
-    acc[curr] ? ++acc[curr] : acc[curr] = 1;
+    if (!(jokers && curr === cardNums['J'])) {
+      acc[curr] ? ++acc[curr] : acc[curr] = 1;
+    }
     return acc;
   }, {});
 
@@ -107,7 +167,20 @@ const compareHandsLowToHigh = hands => {
     } else if (priority.get(a.handType) > priority.get(b.handType)) {
       return -1;
     } else if (priority.get(a.handType) === priority.get(b.handType)) {
-        return recursiveComparison(a.cardAsNums, b.cardAsNums);
+      return recursiveComparison(a.cardAsNums, b.cardAsNums);
+    }
+    return 0;
+  });
+}
+
+const compareHandsLowToHighWithJAsJokers = hands => {
+  return hands.toSorted((a, b) => {
+    if (priority.get(a.handTypeWithJAsJokers) < priority.get(b.handTypeWithJAsJokers)) {
+      return 1;
+    } else if (priority.get(a.handTypeWithJAsJokers) > priority.get(b.handTypeWithJAsJokers)) {
+      return -1;
+    } else if (priority.get(a.handTypeWithJAsJokers) === priority.get(b.handTypeWithJAsJokers)) {
+      return recursiveComparison(a.cardAsNumsWithJAsJokers, b.cardAsNumsWithJAsJokers);
     }
     return 0;
   });
