@@ -12,7 +12,8 @@ parseData(DAY8, (input) => {
 
   const timeString2 = `Day ${DAY8}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = '';
+  const allAs = getAllNodesEndingInChar(network.nodes, 'A');
+  const part2 = getShortestPath(network, allAs, 'Z', true);
   console.timeEnd(timeString2);
 
   showAnswers(DAY8, part1, part2);
@@ -37,10 +38,13 @@ const buildNetwork = input => {
   }, { nodes: {} });
 };
 
-const findSteps = ({ instructions, nodes }, start, end) => {
+const findSteps = ({ instructions, nodes }, start, end, endsWith = false) => {
   let count = 0;
   let currNode = start;
-  for (let i=0; i < instructions.length && currNode !== end; i++) {
+  for (let i=0; i < instructions.length; i++) {
+    if ((!endsWith && currNode === end) || (endsWith && currNode.slice(-1) === end)) {
+      break;
+    }
     count++;
     currNode = nodes[currNode][instructions[i]];
     if (i === instructions.length - 1) {
@@ -49,3 +53,25 @@ const findSteps = ({ instructions, nodes }, start, end) => {
   }
   return count;
 };
+
+const getAllNodesEndingInChar = (nodes, char) => {
+  return Object.keys(nodes).reduce(
+    (acc, curr) => (curr.slice(-1) === char && acc.push(curr), acc), []
+  );
+};
+
+const getShortestPath = (network, startNodes, end, endsWith) => {
+  return getLCMFromArray(startNodes.map(node => findSteps(network, node, end, endsWith)));
+};
+
+const getLCMFromArray = nums => {
+  return nums.reduce((a, b) => getLeastCommonMultiple(a, b));
+};
+
+const getLeastCommonMultiple = (a, b) => {
+  return (a * b) / getGreatedCommonDenominator(a, b);
+};
+
+const getGreatedCommonDenominator = (a, b) => {
+  return !b ? a : getGreatedCommonDenominator(b, a % b);
+}
