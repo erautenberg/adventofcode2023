@@ -12,7 +12,7 @@ parseData(DAY9, (input) => {
 
   const timeString2 = `Day ${DAY9}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = '';
+  const part2 = getSumOfDifferences(oasis, true);
   console.timeEnd(timeString2);
 
   showAnswers(DAY9, part1, part2);
@@ -50,6 +50,25 @@ const getNextValue = (differences = []) => {
   return nextValue;
 };
 
-const getSumOfDifferences = oasis => {
-  return oasis.reduce((acc, curr) => acc += getNextValue(getDifferences(curr)), 0);
+const getPrevValue = (differences = []) => {
+  let nextValue = 0;
+
+  for (let i=differences.length - 1; i>0; i--) {
+    const currLine = differences[i];
+    currLine.unshift(nextValue);
+
+    const currValue = currLine[0];
+    const prevValue = differences[i-1][0];
+    nextValue = prevValue - currValue;
+  }
+  differences[0].push(nextValue);
+  return nextValue;
+};
+
+const getSumOfDifferences = (oasis, prev) => {
+  return oasis.reduce((acc, curr) => {
+    const differences = getDifferences(curr);
+    acc += prev ? getPrevValue(differences) : getNextValue(differences);
+    return acc;
+  }, 0);
 };
