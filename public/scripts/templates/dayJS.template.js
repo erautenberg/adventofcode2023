@@ -16,7 +16,7 @@ parseData(DAY${num}, (input) => {
   const part2 = '';
   console.timeEnd(timeString2);
 
-  showAnswers(DAY9, part1, part2);
+  showAnswers(DAY${num}, part1, part2);
 });`;
 };
 
