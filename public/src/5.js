@@ -1,5 +1,8 @@
 const DAY5 = 5;
 parseData(DAY5, (input) => {
+  const timeStringDay5 = `Day ${DAY5}, Total Execution Time`;
+  console.time(timeStringDay5);
+
   const timeStringData = `Day ${DAY5}, Data Setup Execution Time`;
   console.time(timeStringData);
   const almanac = mapAlmanac(input);
@@ -15,6 +18,7 @@ parseData(DAY5, (input) => {
   const part2 = getLowestLocationByRange(almanac);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay5);
   showAnswers(DAY5, part1, part2);
 });
 

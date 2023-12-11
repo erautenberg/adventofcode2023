@@ -1,6 +1,9 @@
 const DAY8 = 8;
 parseData(DAY8, (input) => {
-  const timeStringData1 = `Day ${DAY8}, Part 1 Data Setup Execution Time`;
+  const timeStringDay8 = `Day ${DAY8}, Total Execution Time`;
+  console.time(timeStringDay8);
+
+  const timeStringData1 = `Day ${DAY8}, Data Setup Execution Time`;
   console.time(timeStringData1);
   const network = buildNetwork(input);
   console.timeEnd(timeStringData1);
@@ -16,6 +19,7 @@ parseData(DAY8, (input) => {
   const part2 = getShortestPath(network, allAs, 'Z', true);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay8);
   showAnswers(DAY8, part1, part2);
 });
 

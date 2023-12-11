@@ -1,6 +1,9 @@
 const DAY7 = 7;
 parseData(DAY7, (input) => {
-  const timeStringData1 = `Day ${DAY7}, Part 1 Data Setup Execution Time`;
+  const timeStringDay7 = `Day ${DAY7}, Total Execution Time`;
+  console.time(timeStringDay7);
+
+  const timeStringData1 = `Day ${DAY7}, Data Setup Execution Time`;
   console.time(timeStringData1);
   const hands = getHands(input);
   console.timeEnd(timeStringData1);
@@ -14,10 +17,10 @@ parseData(DAY7, (input) => {
   const timeString2 = `Day ${DAY7}, Part 2 Execution Time`;
   console.time(timeString2);
   const sortedHandsWithJAsJokers = compareHandsLowToHighWithJAsJokers(hands);
-  console.log(sortedHandsWithJAsJokers)
   const part2 = getScore(sortedHandsWithJAsJokers);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay7);
   showAnswers(DAY7, part1, part2);
 });
 

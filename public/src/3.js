@@ -1,5 +1,8 @@
 const DAY3 = 3;
 parseData(DAY3, (input) => {
+  const timeStringDay3 = `Day ${DAY3}, Total Execution Time`;
+  console.time(timeStringDay3);
+
   const timeStringData = `Day ${DAY3}, Data Setup Execution Time`;
   console.time(timeStringData);
   const grid = input.map(line => line.split(''));
@@ -15,6 +18,7 @@ parseData(DAY3, (input) => {
   const part2 = sumGearRatios(getPartNumbers(grid).validPartsNearGears);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay3);
   showAnswers(DAY3, part1, part2);
 });
 

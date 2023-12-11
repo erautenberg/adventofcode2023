@@ -1,5 +1,8 @@
 const DAY2 = 2;
 parseData(DAY2, (input) => {
+  const timeStringDay2 = `Day ${DAY2}, Total Execution Time`;
+  console.time(timeStringDay2);
+
   const timeStringData = `Day ${DAY2}, Data Setup Execution Time`;
   console.time(timeStringData);
   const parsedInput = formatGames(input);
@@ -17,6 +20,7 @@ parseData(DAY2, (input) => {
   const part2 = getSumOfPowers(fewestCubes);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay2);
   showAnswers(DAY2, part1, part2);
 });
 

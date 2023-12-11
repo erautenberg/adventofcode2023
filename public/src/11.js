@@ -3,7 +3,7 @@ parseData(DAY11, (input) => {
   const timeStringDay11 = `Day ${DAY11}, Total Execution Time`;
   console.time(timeStringDay11);
 
-  const timeStringData1 = `Day ${DAY11}, Part 1 Data Setup Execution Time`;
+  const timeStringData1 = `Day ${DAY11}, Data Setup Execution Time`;
   console.time(timeStringData1);
   const { galaxies, emptyRows, emptyColumns } = parseUniverse(input);
   console.timeEnd(timeStringData1);

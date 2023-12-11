@@ -1,5 +1,8 @@
 const DAY4 = 4;
 parseData(DAY4, (input) => {
+  const timeStringDay4 = `Day ${DAY4}, Total Execution Time`;
+  console.time(timeStringDay4);
+
   const timeStringData = `Day ${DAY4}, Data Setup Execution Time`;
   console.time(timeStringData);
   const formattedCards = formatCards(input);
@@ -15,6 +18,7 @@ parseData(DAY4, (input) => {
   const part2 = getTotalCards(formattedCards);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay4);
   showAnswers(DAY4, part1, part2);
 });
 

@@ -1,7 +1,10 @@
 module.exports = num => {
   return `const DAY${num} = ${num};
 parseData(DAY${num}, (input) => {
-  const timeStringData1 = \`Day \$\{DAY${num}\}, Part 1 Data Setup Execution Time\`;
+  const timeStringDay${num} = \`Day \$\{DAY${num}\}, Total Execution Time\`;
+  console.time(timeStringDay${num});
+
+  const timeStringData1 = \`Day \$\{DAY${num}\}, Data Setup Execution Time\`;
   console.time(timeStringData1);
 
   console.timeEnd(timeStringData1);
@@ -16,6 +19,7 @@ parseData(DAY${num}, (input) => {
   const part2 = '';
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay${num});
   showAnswers(DAY${num}, part1, part2);
 });`;
 };

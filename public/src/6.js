@@ -1,5 +1,8 @@
 const DAY6 = 6;
 parseData(DAY6, (input) => {
+  const timeStringDay6 = `Day ${DAY6}, Total Execution Time`;
+  console.time(timeStringDay6);
+
   const timeStringData1 = `Day ${DAY6}, Part 1 Data Setup Execution Time`;
   console.time(timeStringData1);
   const races1 = getRaceData(input);
@@ -30,6 +33,7 @@ parseData(DAY6, (input) => {
   const part2quadratic = getProductOfWaysToWinQuadratic(races2);
   console.timeEnd(timeString2Quadratic);
 
+  console.timeEnd(timeStringDay6);
   showAnswers(DAY6, part1, part2);
 });
 

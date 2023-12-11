@@ -1,6 +1,9 @@
 const DAY9 = 9;
 parseData(DAY9, (input) => {
-  const timeStringData1 = `Day ${DAY9}, Part 1 Data Setup Execution Time`;
+  const timeStringDay9 = `Day ${DAY9}, Total Execution Time`;
+  console.time(timeStringDay9);
+
+  const timeStringData1 = `Day ${DAY9}, Data Setup Execution Time`;
   console.time(timeStringData1);
   const oasis = formatNumsAsArrays(input);
   console.timeEnd(timeStringData1);
@@ -15,6 +18,7 @@ parseData(DAY9, (input) => {
   const part2 = getSumOfDifferences(oasis, true);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay9);
   showAnswers(DAY9, part1, part2);
 });
 

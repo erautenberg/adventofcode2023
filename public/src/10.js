@@ -1,6 +1,9 @@
 const DAY10 = 10;
 parseData(DAY10, (input) => {
-  const timeStringData1 = `Day ${DAY10}, Part 1 Data Setup Execution Time`;
+  const timeStringDay10 = `Day ${DAY10}, Total Execution Time`;
+  console.time(timeStringDay10);
+
+  const timeStringData1 = `Day ${DAY10}, Data Setup Execution Time`;
   console.time(timeStringData1);
   const map = createMap(input);
   const start = getStart(map);
@@ -18,6 +21,7 @@ parseData(DAY10, (input) => {
   const part2 = getInteriorPoints(loop);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay10);
   showAnswers(DAY10, part1, part2);
 });
 

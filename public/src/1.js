@@ -1,5 +1,8 @@
 const DAY1 = 1;
 parseData(DAY1, (input) => {
+  const timeStringDay1 = `Day ${DAY1}, Total Execution Time`;
+  console.time(timeStringDay1);
+
   const timeString1 = `Day ${DAY1}, Part 1 Execution Time`;
   console.time(timeString1);
   const part1 = getSum(formatLines(input, getNums));
@@ -10,6 +13,7 @@ parseData(DAY1, (input) => {
   const part2 = getSum(formatLines(input, getFormattedNums));
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay1);
   showAnswers(DAY1, part1, part2);
 });
 
