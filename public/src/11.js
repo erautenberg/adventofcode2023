@@ -2,84 +2,57 @@ const DAY11 = 11;
 parseData(DAY11, (input) => {
   const timeStringData1 = `Day ${DAY11}, Part 1 Data Setup Execution Time`;
   console.time(timeStringData1);
-  const universe = getExpandedUniverse(input);
-  const galaxies = getGalaxies(universe);
-  const empties = getEmpties(universe);
+  const { galaxies, emptyRows, emptyColumns } = parseUniverse(input);
   console.timeEnd(timeStringData1);
 
   const timeString1 = `Day ${DAY11}, Part 1 Execution Time`;
   console.time(timeString1);
-  const distancesPart1 = getGalaxyDistances(galaxies, [], empties.rows, empties.columns, 2);
+  const distancesPart1 = getGalaxyDistances(galaxies, [], emptyRows, emptyColumns, 2);
   const part1 = getSumOfGalaxyDistances(distancesPart1);
   console.timeEnd(timeString1);
 
   const timeString2 = `Day ${DAY11}, Part 2 Execution Time`;
   console.time(timeString2);
-  const distancesPart2 = getGalaxyDistances(galaxies, [], empties.rows, empties.columns, 1000000);
+  const distancesPart2 = getGalaxyDistances(galaxies, [], emptyRows, emptyColumns, 1000000);
   const part2 = getSumOfGalaxyDistances(distancesPart2);
   console.timeEnd(timeString2);
 
   showAnswers(DAY11, part1, part2);
 });
 
-const expandRows = (grid, expansionAmount = 0) => {
+const parseUniverse = (grid) => {
   let count = 0;
-  return grid.reduce((acc, row) => {
-    let parsed = row;
-    if (typeof parsed === 'string') {
-      parsed = parsed.split('').map(column => column === '#' ? ++count : column);
-    }
-    acc.push(parsed);
-    if (parsed.every(c => c === '.')) {
-      for (let i=0; i<expansionAmount - 1; i++) { // remove the +1 from above push
-        acc.push(parsed);
+
+  const formattedGrid = grid.reduce((acc, curr, rowIndex) => {
+    const row = curr.split('').map((column, columnIndex) => {
+      if (column === '#') {
+        const galaxyNumber = ++count;
+        acc.galaxies.push({ number: galaxyNumber, row: rowIndex, column: columnIndex });
+        return galaxyNumber;
       }
-    }
-    return acc;
-  }, []);
-};
-
-const getEmptyRows = grid => {
-  return grid.reduce((acc, row, rowIndex) => {
+      return column;
+    });
     if (row.every(c => c === '.')) {
-      acc.push(rowIndex);
+      acc.emptyRows.push(rowIndex);
     }
+    acc.universe.push(row);
     return acc;
-  }, []);
-};
+  }, { universe: [], galaxies: [], emptyRows: [] });
 
-const getEmpties = grid => {
-  return {
-    rows: getEmptyRows(grid),
-    columns: getEmptyRows(invertRowsAndColumns(grid))
-  };
+  const emptyColumns = invertRowsAndColumns(formattedGrid.universe).reduce(
+    (acc, curr, columnIndex) => {
+      if (curr.every(c => c === '.')) {
+        acc.push(columnIndex);
+      }
+      return acc;
+    }, []);
+  return { ...formattedGrid, emptyColumns };
 };
 
 const invertRowsAndColumns = grid => {
   return grid.reduce((acc, row) =>
     row.map((column, columnIndex) => (acc[columnIndex] || []).concat(row[columnIndex]))
   , []);
-};
-
-const getExpandedUniverse = (input, expansionAmount) => {
-  return invertRowsAndColumns(
-    expandRows(
-      invertRowsAndColumns(
-        expandRows(input, expansionAmount)
-      ), expansionAmount
-    )
-  );
-};
-
-const getGalaxies = universe => {
-  return universe.reduce((acc, row, rowIndex) => {
-    row.forEach((column, columnIndex) => {
-      if (typeof column === 'number') {
-        acc.push({ number: column, row: rowIndex, column: columnIndex });
-      }
-    });
-    return acc
-  }, []);
 };
 
 const getPathLength = (a, b, emptyRows = [], emptyColumns = [], offset = 1) => {
