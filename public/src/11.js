@@ -2,20 +2,21 @@ const DAY11 = 11;
 parseData(DAY11, (input) => {
   const timeStringData1 = `Day ${DAY11}, Part 1 Data Setup Execution Time`;
   console.time(timeStringData1);
-  const universe = getExpandedUniverse(input, 2);
-  console.log(universe);
+  const universe = getExpandedUniverse(input);
   const galaxies = getGalaxies(universe);
+  const empties = getEmpties(universe);
   console.timeEnd(timeStringData1);
 
   const timeString1 = `Day ${DAY11}, Part 1 Execution Time`;
   console.time(timeString1);
-  const distances = getGalaxyDistances(galaxies);
-  const part1 = getSumOfGalaxyDistances(distances);
+  const distancesPart1 = getGalaxyDistances(galaxies, [], empties.rows, empties.columns, 2);
+  const part1 = getSumOfGalaxyDistances(distancesPart1);
   console.timeEnd(timeString1);
 
   const timeString2 = `Day ${DAY11}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = '';
+  const distancesPart2 = getGalaxyDistances(galaxies, [], empties.rows, empties.columns, 1000000);
+  const part2 = getSumOfGalaxyDistances(distancesPart2);
   console.timeEnd(timeString2);
 
   showAnswers(DAY11, part1, part2);
@@ -36,6 +37,22 @@ const expandRows = (grid, expansionAmount = 0) => {
     }
     return acc;
   }, []);
+};
+
+const getEmptyRows = grid => {
+  return grid.reduce((acc, row, rowIndex) => {
+    if (row.every(c => c === '.')) {
+      acc.push(rowIndex);
+    }
+    return acc;
+  }, []);
+};
+
+const getEmpties = grid => {
+  return {
+    rows: getEmptyRows(grid),
+    columns: getEmptyRows(invertRowsAndColumns(grid))
+  };
 };
 
 const invertRowsAndColumns = grid => {
@@ -65,18 +82,28 @@ const getGalaxies = universe => {
   }, []);
 };
 
-const getPathLength = (a, b) => {
-  return Math.abs(b.row - a.row) + Math.abs(b.column - a.column);
+const getPathLength = (a, b, emptyRows = [], emptyColumns = [], offset = 1) => {
+  const emptyRowsCrossed = emptyRows.reduce((acc, curr) =>
+    (a.row < curr && b.row > curr) || (a.row > curr && b.row < curr) ? ++acc : acc
+  , 0);
+  const emptyColumnsCrossed = emptyColumns.reduce((acc, curr) =>
+    (a.column < curr && b.column > curr) || (a.column > curr && b.column < curr) ? ++acc : acc
+  , 0);
+
+  const rowOffset = emptyRowsCrossed * (offset - 1);
+  const columnOffset = emptyColumnsCrossed * (offset - 1);
+
+  return Math.abs(b.row - a.row) + rowOffset + Math.abs(b.column - a.column) + columnOffset;
 };
 
-const getGalaxyDistances = (galaxies, distances = []) => {
+const getGalaxyDistances = (galaxies, distances = [], emptyRows = [], emptyColumns = [], offset = 0) => {
   if (galaxies.length === 1) {
     return distances;
   }
   for (let i=1; i<galaxies.length; i++) {
-    distances.push(getPathLength(galaxies[0], galaxies[i]));
+    distances.push(getPathLength(galaxies[0], galaxies[i], emptyRows, emptyColumns, offset));
   }
-  return (getGalaxyDistances(galaxies.slice(1), distances));
+  return (getGalaxyDistances(galaxies.slice(1), distances, emptyRows, emptyColumns, offset));
 };
 
 const getSumOfGalaxyDistances = distances => {
