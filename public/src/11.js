@@ -1,5 +1,8 @@
 const DAY11 = 11;
 parseData(DAY11, (input) => {
+  const timeStringDay11 = `Day ${DAY11}, Total Execution Time`;
+  console.time(timeStringDay11);
+
   const timeStringData1 = `Day ${DAY11}, Part 1 Data Setup Execution Time`;
   console.time(timeStringData1);
   const { galaxies, emptyRows, emptyColumns } = parseUniverse(input);
@@ -15,6 +18,7 @@ parseData(DAY11, (input) => {
   const part2 = getSumOfGalaxyDistances(0, galaxies, emptyRows, emptyColumns, 1000000);
   console.timeEnd(timeString2);
 
+  console.timeEnd(timeStringDay11);
   showAnswers(DAY11, part1, part2);
 });
 
@@ -68,11 +72,14 @@ const getPathLength = (a, b, emptyRows = [], emptyColumns = [], offset = 1) => {
 };
 
 const getSumOfGalaxyDistances = (sum = 0, galaxies, emptyRows = [], emptyColumns = [], offset = 0) => {
-  if (galaxies.length === 1) {
-    return sum;
+  let tempGalaxies = galaxies;
+  for (let i=1; i<tempGalaxies.length; i++) {
+    sum += getPathLength(tempGalaxies[0], tempGalaxies[i], emptyRows, emptyColumns, offset);
+    if (i === tempGalaxies.length - 1) {
+      tempGalaxies = tempGalaxies.slice(1);
+      i = 0;
+    }
   }
-  for (let i=1; i<galaxies.length; i++) {
-    sum += getPathLength(galaxies[0], galaxies[i], emptyRows, emptyColumns, offset);
-  }
-  return getSumOfGalaxyDistances(sum, galaxies.slice(1), emptyRows, emptyColumns, offset);
+
+  return sum;
 };
