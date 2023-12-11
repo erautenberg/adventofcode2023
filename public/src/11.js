@@ -7,14 +7,12 @@ parseData(DAY11, (input) => {
 
   const timeString1 = `Day ${DAY11}, Part 1 Execution Time`;
   console.time(timeString1);
-  const distancesPart1 = getGalaxyDistances(galaxies, [], emptyRows, emptyColumns, 2);
-  const part1 = getSumOfGalaxyDistances(distancesPart1);
+  const part1 = getSumOfGalaxyDistances(0, galaxies, emptyRows, emptyColumns, 2);
   console.timeEnd(timeString1);
 
   const timeString2 = `Day ${DAY11}, Part 2 Execution Time`;
   console.time(timeString2);
-  const distancesPart2 = getGalaxyDistances(galaxies, [], emptyRows, emptyColumns, 1000000);
-  const part2 = getSumOfGalaxyDistances(distancesPart2);
+  const part2 = getSumOfGalaxyDistances(0, galaxies, emptyRows, emptyColumns, 1000000);
   console.timeEnd(timeString2);
 
   showAnswers(DAY11, part1, part2);
@@ -69,16 +67,12 @@ const getPathLength = (a, b, emptyRows = [], emptyColumns = [], offset = 1) => {
   return Math.abs(b.row - a.row) + rowOffset + Math.abs(b.column - a.column) + columnOffset;
 };
 
-const getGalaxyDistances = (galaxies, distances = [], emptyRows = [], emptyColumns = [], offset = 0) => {
+const getSumOfGalaxyDistances = (sum = 0, galaxies, emptyRows = [], emptyColumns = [], offset = 0) => {
   if (galaxies.length === 1) {
-    return distances;
+    return sum;
   }
   for (let i=1; i<galaxies.length; i++) {
-    distances.push(getPathLength(galaxies[0], galaxies[i], emptyRows, emptyColumns, offset));
+    sum += getPathLength(galaxies[0], galaxies[i], emptyRows, emptyColumns, offset);
   }
-  return (getGalaxyDistances(galaxies.slice(1), distances, emptyRows, emptyColumns, offset));
+  return getSumOfGalaxyDistances(sum, galaxies.slice(1), emptyRows, emptyColumns, offset);
 };
-
-const getSumOfGalaxyDistances = distances => {
-  return distances.reduce((acc, curr) => acc += curr, 0);
-}
