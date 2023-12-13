@@ -41,7 +41,7 @@ const parseUniverse = (grid) => {
     return acc;
   }, { universe: [], galaxies: [], emptyRows: [] });
 
-  const emptyColumns = invertRowsAndColumns(formattedGrid.universe).reduce(
+  const emptyColumns = transpose(formattedGrid.universe).reduce(
     (acc, curr, columnIndex) => {
       if (curr.every(c => c === '.')) {
         acc.push(columnIndex);
@@ -49,12 +49,6 @@ const parseUniverse = (grid) => {
       return acc;
     }, []);
   return { ...formattedGrid, emptyColumns };
-};
-
-const invertRowsAndColumns = grid => {
-  return grid.reduce((acc, row) =>
-    row.map((column, columnIndex) => (acc[columnIndex] || []).concat(row[columnIndex]))
-  , []);
 };
 
 const getPathLength = (a, b, emptyRows = [], emptyColumns = [], offset = 1) => {

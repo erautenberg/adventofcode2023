@@ -48,6 +48,13 @@ function transpose(matrix) {
   return Object.keys(matrix[0]).map(colNumber => matrix.map(rowNumber => rowNumber[colNumber]));
 }
 
+function invertRowsAndColumns(grid) {
+  return grid.reduce((acc, row) =>
+    row.map((column, columnIndex) => (acc[columnIndex] || []).concat(row[columnIndex]))
+  , []);
+}
+
+
 // NAVIGATION
 function makeNavigation(days) {
   let nav = document.getElementById('nav');
@@ -68,5 +75,5 @@ function makeHyperlink(title, location) {
   return list;
 }
 
-const DAYS_COMPLETED = 12;
+const DAYS_COMPLETED = 13;
 makeNavigation(DAYS_COMPLETED);
