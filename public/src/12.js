@@ -15,7 +15,7 @@ parseData(DAY12, (input) => {
 
   const timeString2 = `Day ${DAY12}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = '';
+  const part2 = getTotalValidCombos(springs, 5, '?');
   console.timeEnd(timeString2);
 
   console.timeEnd(timeStringDay12);
@@ -32,7 +32,7 @@ const formatSprings = input => {
   }, []);
 };
 
-const getValidCombosCount = (springs = [], groups = []) => {
+const getValidCombosCount = (springs = [], groups = [], cache = new Map()) => {
   // if there are no more springs or groups to check,
   // this has been a valid combination and we can count it
   if (springs.length === 0) {
@@ -45,32 +45,50 @@ const getValidCombosCount = (springs = [], groups = []) => {
     return Number(!springs.includes('#'));
   }
 
+  // create a cache of already found values to prevent repeating the same calculations
+  const cacheKey = `${springs}-${groups.join(',')}`;
+  const cachedValue = cache.get(cacheKey);
+  if (cachedValue !== undefined) {
+    return cachedValue;
+  }
+
   let sum = 0;
+  const currSpring = springs[0];
+  const currGroup = groups[0];
 
   // if the first spring is not known to be damaged,
   // treat it as an operational spring and check the rest
-  if (springs[0] !== '#') {
+  if (currSpring !== '#') {
     // check the next set of springs after this first one
-    sum += getValidCombosCount(springs.slice(1), groups);
+    sum += getValidCombosCount(springs.slice(1), groups, cache);
   }
 
   // if the first spring is not known to be operational
   // (this can be the beginning of a set of damaged springs)
-  if (springs[0] !== '.' &&
+  if (currSpring !== '.' &&
       // and the next spring after this set is operational
-      springs[groups[0]] !== '#' &&
-      // and the remaining springs are not less than the expected number of damaged springs
-      springs.length >= groups[0] &&
+      springs[currGroup] !== '#' &&
+      // and the remaining springs aren't less than this damage group's expected number of springs
+      springs.length >= currGroup &&
       // and no operational springs exist in the next set of springs equal to the damage grouping
-      !springs.slice(0, groups[0]).includes('.')
+      !springs.slice(0, currGroup).includes('.')
     ) {
       // check the next segment of springs starting after this damage group
-      sum += getValidCombosCount(springs.slice(groups[0] + 1), groups.slice(1));
+      sum += getValidCombosCount(springs.slice(groups[0] + 1), groups.slice(1), cache);
   }
 
+  cache.set(cacheKey, sum);
   return sum;
 };
 
-const getTotalValidCombos = springs => {
-  return springs.reduce((acc, curr) => acc += getValidCombosCount(curr[0], curr[1]), 0);
+const getTotalValidCombos = (springs, repeat = 1, delimiter = '?') => {
+  let repeatedSprings = springs;
+  if (repeat > 1) {
+    repeatedSprings = springs.map(springInfo => {
+      let springList = (springInfo[0] + delimiter).repeat(repeat).slice(0, -1);
+      let damageList = Array(repeat).fill(springInfo[1]).flat();
+      return [springList, damageList];
+    });
+  }
+  return repeatedSprings.reduce((acc, curr) => acc += getValidCombosCount(curr[0], curr[1]), 0);
 };
