@@ -6,17 +6,16 @@ parseData(DAY13, (input) => {
   const timeStringData1 = `Day ${DAY13}, Data Setup Execution Time`;
   console.time(timeStringData1);
   const valley = splitPatterns(input);
-  const reflections = getReflectionCounts(valley);
   console.timeEnd(timeStringData1);
 
   const timeString1 = `Day ${DAY13}, Part 1 Execution Time`;
   console.time(timeString1);
-  const part1 = getReflectionTotal(reflections);
+  const part1 = getReflectionCounts(valley);
   console.timeEnd(timeString1);
 
   const timeString2 = `Day ${DAY13}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = getReflectionCountsWithSmudge(valley, reflections);
+  const part2 = getReflectionCountsWithSmudge(valley);
   console.timeEnd(timeString2);
 
   console.timeEnd(timeStringDay13);
@@ -32,6 +31,27 @@ const splitPatterns = input => {
     }
     return acc;
   }, [[]]);
+};
+
+const checkIfColumnReflects = (line, column) => {
+  let left = column;
+  let right = column + 1;
+  let leftValue = line[left];
+  let rightValue = line[right];
+  let isValid = false;
+
+  while (leftValue === rightValue) {
+    left--;
+    right++;
+    leftValue = line[left];
+    rightValue = line[right];
+    if (!leftValue || !rightValue) {
+      isValid = true;
+      break;
+    }
+  }
+
+  return isValid;
 };
 
 const findReflectionColumn = (pattern, line) => {
@@ -53,9 +73,9 @@ const findReflectionColumn = (pattern, line) => {
     }
   }
   return reflectionColumn;
-}
+};
 
-const findReflectionColumns = (pattern, line) => {
+const findAllReflectionColumns = (pattern, line) => {
   let reflectionColumns = [];
   for (let i=0; i<line.length; i++) {
     if (checkIfColumnReflects(line, i)) {
@@ -73,34 +93,6 @@ const findReflectionColumns = (pattern, line) => {
     }
   }
   return reflectionColumns;
-}
-
-const checkIfColumnReflects = (line, column, flip = false) => {
-  let left = column;
-  let right = column + 1;
-  let leftValue = line[left];
-  let rightValue = line[right];
-  let isValid = false;
-
-  while (leftValue === rightValue) {
-    left--;
-    right++;
-    leftValue = line[left];
-    rightValue = line[right];
-    if (!leftValue || !rightValue) {
-      isValid = true;
-      break;
-    }
-  }
-
-  return isValid;
-};
-
-const getReflectionCounts = valley => {
-  return valley.reduce((acc, curr) => {
-    acc.push(getReflection(curr));
-    return acc;
-  }, []);
 };
 
 const getReflection = (pattern) => {
@@ -112,26 +104,43 @@ const getReflection = (pattern) => {
     reflection++;
   }
   return reflection;
-}
+};
 
 const getReflectionTotal = reflections => {
   return reflections.reduce((acc, curr) => acc += curr, 0);
-}
+};
+
+const getReflectionCounts = valley => {
+  return getReflectionTotal(
+    valley.reduce((acc, curr) => {
+      acc.push(getReflection(curr));
+      return acc;
+    }, [])
+  );
+};
 
 const flipSymbol = symbol => {
   return symbol === '.' ? '#' : '.';
-}
+};
+
+const getAllReflections = pattern => {
+  let reflections = findAllReflectionColumns(pattern, pattern[0]).map(n => ++n);
+  const transposedCurr = transpose(pattern);
+  reflections.push(
+    ...findAllReflectionColumns(transposedCurr, transposedCurr[0]).map(n => (n + 1) * 100)
+  );
+  return reflections;
+};
 
 const getReflectionCountsWithSmudge = (valley) => {
-  let newReflections = [];
-
-  const allReflections = getAllValleyReflections(valley);
+  let allReflections = [];
 
   for (let i=0; i<valley.length; i++) {
     const pattern = valley[i];
 
     patternLoop: for (let j=0; j<pattern.length; j++) {
       const line = pattern[j];
+      const allPatternReflections = getAllReflections(pattern);
 
       for (let k=0; k<line.length; k++) {
         let newLine = [line.slice(0, k), flipSymbol(line[k]), line.slice(k + 1)].flat();
@@ -141,30 +150,16 @@ const getReflectionCountsWithSmudge = (valley) => {
           pattern.slice(j + 1)
         ].flat();
 
-        let reflections = getAllReflections(newPattern);
-        let result = reflections.filter(x => !allReflections[i].includes(x));
-        if (result.length) {
-          newReflections.push(result[0]);
+        const newReflections = getAllReflections(newPattern).filter(
+          summary => !allPatternReflections.includes(summary)
+        );
+        if (newReflections.length === 1) {
+          allReflections.push(newReflections[0]);
           break patternLoop;
         }
       }
     }
   }
 
-  return getReflectionTotal(newReflections);
-}
-const getAllReflections = pattern => {
-    let reflections = findReflectionColumns(pattern, pattern[0]).map(n => ++n);
-    const transposedCurr = transpose(pattern);
-    reflections.push(
-      ...findReflectionColumns(transposedCurr, transposedCurr[0]).map(n => (n + 1) * 100)
-    );
-    return reflections;
-}
-
-const getAllValleyReflections = valley => {
-  return valley.reduce((acc, curr) => {
-    acc.push(getAllReflections(curr));
-    return acc;
-  }, []);
-}
+  return getReflectionTotal(allReflections);
+};
