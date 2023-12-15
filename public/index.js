@@ -54,6 +54,9 @@ function invertRowsAndColumns(grid) {
   , []);
 }
 
+function deepCopy2DArray(arr) {
+  return arr.map(row => row.map(column => column));
+}
 
 // NAVIGATION
 function makeNavigation(days) {

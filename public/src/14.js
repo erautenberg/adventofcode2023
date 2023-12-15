@@ -16,7 +16,8 @@ parseData(DAY14, (input) => {
 
   const timeString2 = `Day ${DAY14}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = '';
+  const rotatedCycles = rotateByCycles(platform, 1000000000);
+  const part2 = getLoadSum(rotatedCycles);
   console.timeEnd(timeString2);
 
   console.timeEnd(timeStringDay14);
@@ -29,16 +30,18 @@ const buildPlatform = input => {
 
 const movePlatform = (platform, direction) => {
   const shouldTranspose = direction === 'north' || direction === 'south';
-  const offset = direction === 'north' || direction === 'west' ? -1 : 1;
-  let adjustedPlatform = shouldTranspose ? transpose(platform) : platform;
+  let adjustedPlatform = shouldTranspose ? transpose(platform) : deepCopy2DArray(platform);
+  if (direction === 'south' || direction === 'east') {
+    adjustedPlatform = adjustedPlatform.map(row => row.reverse());
+  }
 
   adjustedPlatform = adjustedPlatform.reduce((acc, curr) => {
     let i = 0;
     while (i<curr.length) {
-      if (curr[i] === 'O' && curr[i + offset] === '.') {
+      if (curr[i] === 'O' && curr[i - 1] === '.') {
         curr[i] = '.';
-        curr[i + offset] = 'O';
-        i = i + offset;
+        curr[i - 1] = 'O';
+        i = i - 1;
       } else {
         i++;
       }
@@ -47,6 +50,9 @@ const movePlatform = (platform, direction) => {
     return acc;
   }, []);
 
+  if (direction === 'south' || direction === 'east') {
+    adjustedPlatform = adjustedPlatform.map(row => row.reverse());
+  }
   return shouldTranspose ? transpose(adjustedPlatform) : adjustedPlatform;
 };
 
@@ -57,4 +63,44 @@ const getRowLoad = (row, score) => {
 const getLoadSum = platform => {
   const length = platform.length;
   return platform.reduce((acc, curr, index) => acc += getRowLoad(curr, length - index), 0);
+};
+
+const getByValue = (map, searchValue) => {
+  for (let [key, value] of map.entries()) {
+    if (JSON.stringify(value) === JSON.stringify(searchValue)) {
+      return key;
+    }
+  }
+};
+
+const rotateByCycles = (platform, cycles = 1) => {
+  const directions = ['north', 'west', 'south', 'east'];
+  let rotatedPlatform = platform;
+  let cache = new Map();
+  let loopCycle, repeatOffset;
+
+  for (let i=1; i<=cycles; i++) {
+    const cycledPlatform = directions.reduce((acc, curr) => {
+      rotatedPlatform = movePlatform(rotatedPlatform, curr);
+      acc.push(rotatedPlatform);
+      return acc;
+    }, []);
+
+    const cacheKey = getByValue(cache, cycledPlatform);
+    if (cacheKey !== undefined) {
+      loopCycle = cacheKey;
+      repeatOffset = i - loopCycle;
+      break;
+    } else {
+      cache.set(i, cycledPlatform);
+    }
+  }
+
+  const cacheCycle = ((cycles - loopCycle) % repeatOffset) + loopCycle;
+  let platformsAtCycle = cache.get(cacheCycle);
+  if (platformsAtCycle?.length === 4) {
+    return platformsAtCycle[3];
+  }
+
+  return rotatedPlatform;
 };
