@@ -16,7 +16,7 @@ parseData(DAY16, (input) => {
 
   const timeString2 = `Day ${DAY16}, Part 2 Execution Time`;
   console.time(timeString2);
-  const part2 = '';
+  const part2 = getBestEnergyCount(grid);
   console.timeEnd(timeString2);
 
   console.timeEnd(timeStringDay16);
@@ -115,4 +115,21 @@ const getEnergizedCount = energizedGrid => {
     }, 0);
     return gridTotal;
   }, 0);
+};
+
+const getBestEnergyCount = grid => {
+  return Math.max(...[
+    // get all left column options
+    grid.map((row, index) =>
+      getEnergizedCount(energize(grid, { x: 0, y: index }, 'right'))),
+    // get all right column options
+    grid.map((row, index) =>
+      getEnergizedCount(energize(grid, { x: row.length - 1, y: index }, 'left'))),
+    // get all top row options
+    grid[0].map((column, index) =>
+      getEnergizedCount(energize(grid, { x: index, y: 0 }, 'down'))),
+    // get all bottom row options
+    grid[grid.length - 1].map((column, index) =>
+      getEnergizedCount(energize(grid, { x: index, y: grid.length - 1 }, 'up')))
+  ].flat());
 };
